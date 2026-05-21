@@ -34,6 +34,7 @@
       <button type="button" class="cat-btn" data-kategori="pakaian">Pakaian</button>
       <button type="button" class="cat-btn" data-kategori="aksesoris">Aksesoris</button>
       <button type="button" class="cat-btn" data-kategori="tanaman-dekorasi">Tanaman Hias / Dekorasi Rumah</button>
+      <button type="button" class="cat-btn" data-kategori="kecantikan-perawatan-diri">Kecantikan & Perawatan Diri</button>
     </div>
 
     <div id="listProdukMarketplace" class="produk-grid">
@@ -152,7 +153,7 @@
 
       function addToCart(nama, harga, kategori, sellerNama, image) {
         const cart = cartData();
-        const idx = cart.findindex(x => x.nama === nama);
+        const idx = cart.findIndex(x => x.nama === nama);
         if (idx >= 0) {
           cart[idx].qty = Number(cart[idx].qty ?? 1) + 1;
         } else {
@@ -192,7 +193,7 @@
 
       function decreaseCartItem(nama) {
         const cart = cartData();
-        const idx = cart.findindex(x => String(x.nama) === String(nama));
+        const idx = cart.findIndex(x => String(x.nama) === String(nama));
         if (idx < 0) return;
 
         const currentQty = Number(cart[idx].qty ?? 1);
@@ -248,6 +249,7 @@
         if (/(keripik|pisang|singkong|makanan)/.test(n)) return 'makanan-minuman';
         if (/(pakaian|baju|kaos)/.test(n)) return 'pakaian';
         if (/(tanaman|dekorasi|hias)/.test(n)) return 'tanaman-dekorasi';
+        if (/(kecantikan|perawatan|skincare|make.?up|lotion|sabun|sampo|pijat)/.test(n)) return 'kecantikan-perawatan-diri';
         if (/(tas|dompet|aksesoris|rajut)/.test(n)) return 'aksesoris';
         return 'kerajinan';
       }

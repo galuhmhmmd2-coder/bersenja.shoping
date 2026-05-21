@@ -107,7 +107,7 @@ img {
   justify-content: space-between;
   align-items: center;
   padding: 14px 24px;
-  background: rgba(224, 123, 7, 0.7);
+  background: rgb(189, 145, 96);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   position: sticky;
