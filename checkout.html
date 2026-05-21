@@ -1,0 +1,24 @@
+<div class="navbar">
+  <div class="nav-left">
+    <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+    <span>Checkout</span>
+  </div>
+</div>
+
+<div style="padding:20px">
+  <h2>Pesanan</h2>
+
+  <div class="card">
+    <p id="produk"></p>
+    <button class="btn" onclick="bayar()">Bayar</button>
+  </div>
+</div>
+
+<script>
+let produk = localStorage.getItem("checkout");
+document.getElementById("produk").innerText = produk;
+
+function bayar(){
+  alert("Pembayaran berhasil");
+}
+</script>

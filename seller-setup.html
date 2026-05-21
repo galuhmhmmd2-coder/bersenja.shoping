@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setup Penjual - BERSENJA</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="nav-left">
+        <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo" />
+        <span>BERSENJA</span>
+      </div>
+
+      <div class="nav-menu">
+        <span onclick="window.location.href='index.html'">Beranda</span>
+        <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+        <span onclick="window.location.href='seller.html'">Penjual</span>
+        <span onclick="window.location.href='profile.html'">Profil</span>
+      </div>
+
+      <div class="nav-right">
+        <button class="btn-secondary" type="button" onclick="logout()">Keluar</button>
+      </div>
+    </nav>
+
+    <section class="seller-wrap">
+      <div class="seller-container">
+        <div class="seller-grid" style="grid-template-columns: 1fr;">
+          <div class="seller-card">
+            <h1 class="seller-title" style="margin-bottom:6px;">Lengkapi Profil Penjual</h1>
+            <p class="seller-subtitle" style="margin-bottom:22px;">
+              Masukkan <b>foto profil</b> dan <b>usia</b> agar toko Anda muncul dengan tampilan yang lebih meyakinkan.
+            </p>
+
+            <div class="divider" style="margin:18px 0;"></div>
+
+            <form id="setupForm" class="seller-form" onsubmit="return false;">
+              <div class="field-row" style="grid-template-columns: 0.8fr 1.2fr; align-items:start;">
+                <div class="field">
+                  <label>Foto Profil (wajib)</label>
+                  <input id="fotoProfil" type="file" accept="image/*" required />
+                  <small class="note" style="margin-top:0;">Gambar disimpan di browser (localStorage) sebagai data URL.</small>
+                </div>
+
+                <div class="field">
+                  <label>Pratinjau</label>
+                  <div class="profile-upload-preview" style="display:flex; gap:14px; align-items:center;">
+                    <img id="fotoProfilPreview" class="profile-avatar" alt="Preview" />
+                    <div>
+                      <p id="previewNama" style="color:#666; margin-bottom:6px;">—</p>
+                      <p style="color:#666; font-size:0.95rem;">Ukuran terbaik: 300×300 atau lebih.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label>Usia (wajib)</label>
+                  <input id="usiaPenjual" type="number" min="10" max="120" placeholder="Contoh: 62" required />
+                </div>
+
+                <div class="field">
+                  <label>Perkenalan (opsional)</label>
+                  <textarea
+                    id="bioPenjual"
+                    rows="3"
+                    placeholder="Contoh: Halo, saya Rina. Saya membuat kerajinan rajut untuk membantu ekonomi keluarga."
+                    style="border:1px solid rgba(0,0,0,0.12); border-radius:14px; padding:12px 14px; font-size:1rem; outline:none; width:100%;"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="checkout-actions" style="justify-content:flex-start; margin-top:10px;">
+                <button class="btn-primary" type="button" onclick="simpanSetupPenjual()">Simpan & Lanjut</button>
+                <button class="btn-secondary" type="button" onclick="window.location.href='seller.html'">Nanti Saja</button>
+              </div>
+
+              <div class="seller-hint" style="margin-top:14px;">
+                Setelah disimpan, foto dan usia akan tampil di halaman <b>Profil</b>.
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>BERSENJA</h3>
+          <p>Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Navigasi</h3>
+          <p>Beranda</p>
+          <p>Marketplace</p>
+          <p>Profil</p>
+        </div>
+        <div class="footer-section">
+          <h3>Kontak</h3>
+          <p>Email: bersenja@gmail.com</p>
+          <p>Instagram: @bersenja.id</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 BERSENJA. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      function logout(){
+        localStorage.removeItem('bersenja_role');
+        localStorage.removeItem('bersenja_email');
+        localStorage.removeItem('bersenja_nama');
+        window.location.href = 'index.html';
+      }
+
+      // preview image
+      const fotoInput = document.getElementById('fotoProfil');
+      const previewEl = document.getElementById('fotoProfilPreview');
+
+      fotoInput.addEventListener('change', async () => {
+        const file = fotoInput.files && fotoInput.files[0];
+        if (!file) return;
+
+        // preview odmah
+        const reader = new FileReader();
+        reader.onload = () => {
+          previewEl.src = reader.result;
+          previewEl.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function setNamaPreview(){
+        const nama = localStorage.getItem('bersenja_nama') || 'Penjual';
+        document.getElementById('previewNama').innerText = 'Toko: ' + nama;
+      }
+
+      setNamaPreview();
+
+      async function fileToDataURL(file){
+        return new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+      }
+
+      async function simpanSetupPenjual(){
+        const file = fotoInput.files && fotoInput.files[0];
+        const usia = Number(document.getElementById('usiaPenjual').value);
+        const bio = (document.getElementById('bioPenjual').value || '').trim();
+
+        if (!file){
+          alert('Foto profil wajib diisi.');
+          return;
+        }
+        if (!Number.isFinite(usia) || usia <= 0){
+          alert('Usia wajib diisi dengan angka yang valid.');
+          return;
+        }
+
+        const dataUrl = await fileToDataURL(file);
+
+        localStorage.setItem('bersenja_foto', dataUrl);
+        localStorage.setItem('bersenja_umur', String(usia));
+        if (bio) localStorage.setItem('bersenja_seller_bio', bio);
+
+        // simpan juga per akun (berdasarkan email) supaya seller berbeda tidak ikut tertimpa
+        const email = localStorage.getItem('bersenja_email') || '';
+        if (email){
+          localStorage.setItem('bersenja_foto_' + email, dataUrl);
+          localStorage.setItem('bersenja_umur_' + email, String(usia));
+          if (bio) localStorage.setItem('bersenja_seller_bio_' + email, bio);
+        }
+
+
+        alert('Profil penjual tersimpan.');
+        window.location.href = 'seller.html';
+      }
+
+      // safety: kalau belum login atau bukan penjual, kembalikan
+      (function guard(){
+        const role = localStorage.getItem('bersenja_role') || 'pembeli';
+        const email = (localStorage.getItem('bersenja_email') || '').trim();
+        if (!email || role !== 'penjual'){
+          window.location.href = 'profile.html';
+        }
+      })();
+    </script>
+  </body>
+</html>
+

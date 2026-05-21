@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Masuk - BERSENJA</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f5f5f5;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .container{
+      background:white;
+      padding:30px;
+      width:350px;
+      border-radius:15px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin:10px 0;
+      border:1px solid #ccc;
+      border-radius:8px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:8px;
+      background:#2e7d32;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      opacity:0.9;
+    }
+
+    p{
+      text-align:center;
+      margin-top:15px;
+    }
+
+    a{
+      color:#2e7d32;
+      text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Masuk</h2>
+
+    <input id="loginEmail" type="email" placeholder="Email" />
+    <input type="password" placeholder="Password" />
+
+    <div style="margin:12px 0;">
+      <label style="font-weight:700;">Masuk sebagai:</label>
+      <select id="loginRole" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; margin-top:8px;">
+        <option value="pembeli">Pembeli</option>
+        <option value="penjual">Penjual</option>
+      </select>
+    </div>
+
+    <button class="btn-secondary" onclick="login()">Masuk</button>
+
+
+    <p>Belum punya akun?
+      <a href="register.html">Daftar</a>
+    </p>
+  </div>
+
+  <script>
+    function getUsers(){
+      const raw = localStorage.getItem('bersenja_users');
+      if(!raw) return [];
+      try { return JSON.parse(raw) || []; } catch(e){ return []; }
+    }
+    function normalizeEmail(e){
+      return String(e || '').trim().toLowerCase();
+    }
+
+    function isSellerSetupCompleteForEmail(email){
+      const foto = localStorage.getItem('bersenja_foto_' + email);
+      const umur = localStorage.getItem('bersenja_umur_' + email);
+      if (foto && umur) return true;
+
+      // fallback (data lama/global)
+      const fotoGlobal = localStorage.getItem('bersenja_foto');
+      const umurGlobal = localStorage.getItem('bersenja_umur');
+      return !!(fotoGlobal && umurGlobal);
+    }
+
+    function countProductsForEmail(email){
+      const raw = localStorage.getItem('bersenja_products');
+      if(!raw) return 0;
+      try {
+        const list = JSON.parse(raw) || [];
+        if(!Array.isArray(list)) return 0;
+        return list.filter(p => (p && p.sellerEmail) === email).length;
+      } catch(e){
+        return 0;
+      }
+    }
+
+    function login(){
+      const role = document.getElementById('loginRole')?.value || 'pembeli';
+      const emailInput = document.getElementById('loginEmail')?.value || '';
+      const passwordInput = (document.querySelector('input[type="password"]')?.value || '').trim();
+
+      const email = normalizeEmail(emailInput);
+      if(!email || !email.includes('@')){
+        alert('Email tidak valid.');
+        return;
+      }
+      if(!passwordInput){
+        alert('Password wajib diisi.');
+        return;
+      }
+
+      const users = getUsers();
+      const user = users.find(u => normalizeEmail(u.email) === email);
+      if(!user){
+        alert('Akun tidak ditemukan. Silakan daftar dulu.');
+        return;
+      }
+      if(user.password !== passwordInput){
+        alert('Password salah.');
+        return;
+      }
+
+      // set session
+      localStorage.setItem('bersenja_role', role);
+      localStorage.setItem('bersenja_email', email);
+      localStorage.setItem('bersenja_nama', (user.nama || email.split('@')[0] || 'Pengguna'));
+
+      alert('Login berhasil!');
+
+      if(role === 'penjual'){
+        const complete = isSellerSetupCompleteForEmail(email);
+        const productCount = countProductsForEmail(email);
+        // jika profil belum lengkap -> start dari awal
+        if(!complete){
+          window.location.href = 'seller-setup.html';
+          return;
+        }
+        // profil sudah lengkap, arahkan ke halaman penjual tetap (produk mungkin belum ada)
+        window.location.href = 'seller.html';
+        return;
+      }
+
+      window.location.href = 'marketplace.html';
+    }
+
+  </script>
+
+</body>
+</html>
+

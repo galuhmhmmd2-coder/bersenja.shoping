@@ -1,0 +1,27 @@
+<div class="navbar">
+  <div class="nav-left">
+    <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+    <span>BERSENJA</span>
+  </div>
+</div>
+
+<div style="display:flex;gap:20px;padding:20px">
+
+  <img src="https://via.placeholder.com/300" width="300">
+
+  <div>
+    <h2>Tas Anyaman</h2>
+    <h3>Rp150.000</h3>
+    <p>Tas handmade dari bahan alami.</p>
+
+<button class="btn-primary" type="button" onclick="beli()">Beli Sekarang</button>
+  </div>
+
+</div>
+
+<script>
+function beli(){
+  localStorage.setItem("checkout","Tas Anyaman");
+  window.location.href="checkout.html";
+}
+</script>

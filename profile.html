@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil - BERSENJA</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-left">
+        <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo" />
+        <span>Profil</span>
+      </div>
+      <div class="nav-menu">
+        <span onclick="window.location.href='index.html'">Beranda</span>
+        <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+        <span onclick="window.location.href='profile.html'">Profil</span>
+      </div>
+
+      <div class="nav-right">
+        <button class="btn-secondary" type="button" onclick="logout()">Keluar</button>
+      </div>
+    </nav>
+
+    <section class="seller-wrap" style="padding:60px 20px;">
+      <div class="seller-container">
+        <div class="seller-grid" style="grid-template-columns: 0.9fr 1.1fr;">
+          <div class="seller-card" style="padding:28px;">
+            <div style="display:flex; gap:18px; align-items:center;">
+              <img id="profileFoto" class="profile-avatar" alt="Foto profil" style="display:none;" />
+
+              <div>
+                <h2 id="profileNama" style="margin-bottom:6px; font-size:1.8rem; color:#2c3e50;">-</h2>
+                <p id="profileEmail" style="color:#666; margin-bottom:6px;">-</p>
+                <p id="profileRole" style="color:#666;"></p>
+              </div>
+            </div>
+
+            <div class="divider" style="margin:18px 0;" ></div>
+
+            <div id="sellerMeta" style="display:none;">
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <span id="badgeUsia" class="pill">Usia: —</span>
+              </div>
+              <h3 style="color:#2c3e50; margin-top:14px; font-size:1.15rem;">Perkenalan</h3>
+              <p id="sellerBio" style="color:#555; line-height:1.8;" >-</p>
+              <div class="seller-hint" style="margin-top:14px;">
+                Tips: Tambahkan produk di halaman <b>Penjual</b>.
+              </div>
+            </div>
+
+            <div id="buyerMeta" style="display:block;">
+              <h3 style="color:#2c3e50; margin-top:10px; font-size:1.15rem;">Ringkasan Pembeli</h3>
+              <p style="color:#555;">Siap belanja? Jelajahi marketplace dan pesan sesuai kebutuhan.</p>
+            </div>
+          </div>
+
+          <div class="seller-card" style="padding:28px;">
+            <div class="seller-list-header">
+              <h2 class="seller-section-title" style="margin:0;">Konten</h2>
+            </div>
+            <div id="roleContent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function logout(){
+        localStorage.removeItem('bersenja_role');
+        localStorage.removeItem('bersenja_email');
+        localStorage.removeItem('bersenja_nama');
+        // juga bersihkan key profil per akun agar tidak nyangkut antar akun
+        const email = localStorage.getItem('bersenja_email') || '';
+        if (email){
+          localStorage.removeItem('bersenja_foto_' + email);
+          localStorage.removeItem('bersenja_umur_' + email);
+          localStorage.removeItem('bersenja_seller_bio_' + email);
+        }
+        // fallback lama (data lama)
+        localStorage.removeItem('bersenja_foto');
+        localStorage.removeItem('bersenja_umur');
+        localStorage.removeItem('bersenja_seller_bio');
+        window.location.href = 'index.html';
+      }
+
+      (function(){
+        const role = localStorage.getItem('bersenja_role') || 'pembeli';
+        const nama = localStorage.getItem('bersenja_nama') || 'Pengguna';
+        const email = localStorage.getItem('bersenja_email') || '-';
+
+        // pastikan key profil per akun benar-benar terpisah antar-akun penjual
+        // kalau email belum ada, fallback tetap memakai key global lama
+        const emailKey = String(email || '');
+
+        const defaultSeller = {
+foto: 'Orang-tua.png.jpeg',
+          umur: 62,
+          bio: 'Saya membantu keluarga melalui kerajinan tangan. Mari berkarya dan saling mendukung!'
+        };
+
+        const keyFoto = 'bersenja_foto_' + (email || '');
+        const keyUmur = 'bersenja_umur_' + (email || '');
+        const keyBio = 'bersenja_seller_bio_' + (email || '');
+
+        const foto = localStorage.getItem(keyFoto) || localStorage.getItem('bersenja_foto') || defaultSeller.foto;
+        const umur = localStorage.getItem(keyUmur) || localStorage.getItem('bersenja_umur') || String(defaultSeller.umur);
+        const bio = localStorage.getItem(keyBio) || localStorage.getItem('bersenja_seller_bio') || defaultSeller.bio;
+
+
+        document.getElementById('profileFoto').src = foto;
+        document.getElementById('profileFoto').style.display = 'block';
+        document.getElementById('profileNama').innerText = nama;
+        document.getElementById('profileEmail').innerText = 'Email: ' + email;
+        document.getElementById('profileRole').innerText = role === 'penjual' ? 'Anda sebagai Penjual' : 'Anda sebagai Pembeli';
+
+        const roleContent = document.getElementById('roleContent');
+        const sellerMeta = document.getElementById('sellerMeta');
+        const buyerMeta = document.getElementById('buyerMeta');
+        const badgeUsia = document.getElementById('badgeUsia');
+        const sellerBio = document.getElementById('sellerBio');
+
+        if (role === 'penjual'){
+          sellerMeta.style.display = 'block';
+          buyerMeta.style.display = 'none';
+          badgeUsia.innerText = 'Usia: ' + umur;
+          sellerBio.innerText = bio;
+
+          const prods = (() => {
+            const raw = localStorage.getItem('bersenja_products');
+            if (!raw) return [];
+            try { return JSON.parse(raw); } catch (e) { return []; }
+          })();
+
+          const sellerEmail = localStorage.getItem('bersenja_email');
+          const myProducts = prods.filter(p => p.sellerEmail === sellerEmail);
+
+          roleContent.innerHTML = `
+            <h3 style="color:#2c3e50; margin-bottom:14px; font-size:1.2rem;">Produk Saya</h3>
+            ${myProducts.length === 0 ? `
+              <div class="card" style="padding:18px;">
+                <p style="color:#666;">Belum ada produk. Klik halaman <b>Penjual</b> untuk mulai menambah.</p>
+                <button class="btn-primary" style="margin-top:14px; width:auto; padding:10px 16px;" onclick="window.location.href='seller.html'">Tambah Produk</button>
+              </div>
+            ` : `
+              <div class="produk-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin:0;">
+                ${myProducts.map(p => `
+                  <div class="card" style="margin:0;">
+<img src="${p.image || 'Keripik-2.png.jpeg'}" alt="${p.nama}" />
+                    <div class="card-content">
+                      <p style="justify-content:flex-start;">${p.nama}</p>
+                      <p class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                      <p style="font-size:0.95rem;color:#666;justify-content:flex-start;min-height:24px;">${p.deskripsi || ''}</p>
+                      <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <span class="pill" style="background:rgba(39,174,96,0.12); color:#1e9b53;">Tayang</span>
+                        <span style="color:#999; font-size:0.9rem;">${p.id ? 'ID ' + p.id.slice(-4) : ''}</span>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          `;
+        } else {
+          roleContent.innerHTML = `
+            <h3 style="color:#2c3e50; margin-bottom:14px; font-size:1.2rem;">Pesanan</h3>
+            <div class="card" style="padding:18px;">
+              <p style="font-weight:700; color:#2c3e50;">Tas Anyaman</p>
+              <p style="color:#666;">Status: <b>Selesai</b></p>
+            </div>
+            <div class="seller-hint" style="margin-top:14px;">
+              Produk Anda berikutnya ada di <b>Marketplace</b>.
+            </div>
+          `;
+        }
+      })();
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marketplace - BERSENJA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+      <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+
+    <div class="nav-menu">
+      <span onclick="window.location.href='index.html'">Beranda</span>
+      <span>Marketplace</span>
+      <span onclick="window.location.href='profile.html'">Profil</span>
+    </div>
+  </div>
+
+  <!-- PRODUK -->
+  <section class="produk">
+    <h2>Marketplace Produk Lansia</h2>
+    <p style="text-align:center; color:#666; margin-top:10px;">Produk penjual akan otomatis tampil di sini.</p>
+
+    <div class="marketplace-categories">
+      <button type="button" class="cat-btn is-active" data-kategori="all">Semua</button>
+      <button type="button" class="cat-btn" data-kategori="makanan-minuman">Makanan & Minuman</button>
+      <button type="button" class="cat-btn" data-kategori="kerajinan">Kerajinan Tangan</button>
+      <button type="button" class="cat-btn" data-kategori="pakaian">Pakaian</button>
+      <button type="button" class="cat-btn" data-kategori="aksesoris">Aksesoris</button>
+      <button type="button" class="cat-btn" data-kategori="tanaman-dekorasi">Tanaman Hias / Dekorasi Rumah</button>
+    </div>
+
+    <div id="listProdukMarketplace" class="produk-grid">
+      <!-- diisi JS -->
+    </div>
+
+    <div class="checkout-cart-bar" aria-label="Keranjang belanja">
+      <div class="cart-left">
+        <div>
+          <b>Keranjang:</b> <span id="cartJumlah">0</span> item
+        </div>
+        <div id="cartRingkasan" class="cart-ringkasan">Belum ada pesanan.</div>
+      </div>
+      <div class="cart-right">
+        <div class="cart-total">Total: <span id="cartTotal">Rp 0</span></div>
+        <button type="button" class="btn-primary" onclick="goToCheckoutFromCart()">Bayar</button>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>
+          Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Navigasi</h3>
+        <p>Beranda</p>
+        <p>Marketplace</p>
+        <p>Profil</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    (function initMarketplace() {
+      const container = document.getElementById('listProdukMarketplace');
+      const kategoriButtons = document.querySelectorAll('.cat-btn');
+
+      const cartKey = 'bersenja_cart';
+      const cartData = () => {
+        const raw = localStorage.getItem(cartKey);
+        if (!raw) return [];
+        try {
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed;
+        } catch (e) { return []; }
+      };
+
+      const setCartData = (arr) => {
+        localStorage.setItem(cartKey, JSON.stringify(arr));
+      };
+
+      function formatRp(n) {
+        return 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+      }
+
+      function syncCartUI() {
+        const cart = cartData();
+        const jumlah = cart.reduce((acc, it) => acc + Number(it.qty || 1), 0);
+        const total = cart.reduce((acc, it) => acc + Number(it.harga) * Number(it.qty || 1), 0);
+
+        document.getElementById('cartJumlah').innerText = jumlah;
+        document.getElementById('cartTotal').innerText = formatRp(total);
+
+        const ringkasan = document.getElementById('cartRingkasan');
+        if (!cart.length) {
+          ringkasan.innerText = 'Belum ada pesanan.';
+          return;
+        }
+
+        ringkasan.innerHTML = cart
+          .map(it => {
+            const subtotal = Number(it.harga) * Number(it.qty || 1);
+            return `
+              <div class="cart-item" style="display:flex;justify-content:space-between;gap:16px; margin:8px 0; align-items:flex-start;">
+                <div style="flex:1; min-width:0;">
+                  <div style="font-weight:700;">${it.nama}</div>
+                  <div style="color:#666;">Qty: <b style="color:#8b4513;">${it.qty}</b></div>
+                  <div class="cart-item-actions" style="display:flex; gap:10px; margin-top:8px;">
+<button type="button" onclick="window.__decreaseCartItem('${it.nama}')" class="btn-secondary" style="padding:8px 12px; border-radius:12px;">Kurangi</button>
+<button type="button" onclick="window.__removeCartItem('${it.nama}')" class="btn-secondary" style="padding:8px 12px; border-radius:12px;">Hapus</button>
+                  </div>
+
+
+                </div>
+                <div style="text-align:right;">
+                  <b>${formatRp(subtotal)}</b>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      function addToCart(nama, harga, kategori, sellerNama, image) {
+        const cart = cartData();
+        const idx = cart.findindex(x => x.nama === nama);
+        if (idx >= 0) {
+          cart[idx].qty = Number(cart[idx].qty ?? 1) + 1;
+        } else {
+          cart.push({ nama, harga: Number(harga), kategori, sellerNama, image, qty: 1 });
+        }
+
+        setCartData(cart);
+        syncCartUI();
+      }
+
+      function cartToCheckout() {
+        const cart = cartData();
+        if (!cart.length) {
+          alert('Keranjang masih kosong.');
+          return;
+        }
+
+        // Simpan ringkasan (multi-item) ke localStorage
+        const total = cart.reduce((acc, it) => acc + Number(it.harga) * Number(it.qty || 1), 0);
+        localStorage.setItem(
+          'checkoutCartData',
+          JSON.stringify({
+            items: cart.map(it => ({ nama: it.nama, harga: it.harga, qty: it.qty })),
+            total
+          })
+        );
+
+        // juga simpan 1 item untuk backward compatibility dengan checkout-form yang lama
+        const first = cart[0];
+        localStorage.setItem('checkoutProdukData', JSON.stringify({ nama: first.nama, harga: Number(first.harga) }));
+
+        window.location.href = 'checkout-form.html';
+      }
+
+      // Expose for onclick
+      window.goToCheckoutFromCart = cartToCheckout;
+
+      function decreaseCartItem(nama) {
+        const cart = cartData();
+        const idx = cart.findindex(x => String(x.nama) === String(nama));
+        if (idx < 0) return;
+
+        const currentQty = Number(cart[idx].qty ?? 1);
+        const nextQty = currentQty - 1;
+
+        if (nextQty <= 0) {
+          cart.splice(idx, 1);
+        } else {
+          cart[idx].qty = nextQty;
+        }
+
+        setCartData(cart);
+        syncCartUI();
+      }
+
+      function removeCartItem(nama) {
+        const cart = cartData();
+        const next = cart.filter(x => String(x.nama) !== String(nama));
+        setCartData(next);
+        syncCartUI();
+      }
+
+
+      window.__decreaseCartItem = decreaseCartItem;
+      window.__removeCartItem = removeCartItem;
+
+      // ===== load products =====
+      const products = (() => {
+        const raw = localStorage.getItem('bersenja_products');
+        if (!raw) return [];
+        try { return JSON.parse(raw); } catch (e) { return []; }
+      })();
+
+      const defaultProducts = [
+        { nama: 'Tas Anyaman', harga: 50000, image: 'Tas-Anyaman.png.jpeg', sellerNama: 'BERSENJA', kategori: 'kerajinan' },
+        { nama: 'Keranjang Rotan', harga: 35000, image: 'Keranjang-rotan.png.jpeg', sellerNama: 'BERSENJA', kategori: 'kerajinan' },
+        { nama: 'Keripik Pisang', harga: 20000, image: 'keripik.png.jpeg', sellerNama: 'BERSENJA', kategori: 'makanan-minuman' },
+        { nama: 'Keripik Singkong', harga: 20000, image: 'Keripik-2.png.jpeg', sellerNama: 'BERSENJA', kategori: 'makanan-minuman' },
+        { nama: 'Dompet Rajut', harga: 30000, image: 'Dompet-Rajut.png.jpeg', sellerNama: 'BERSENJA', kategori: 'aksesoris' },
+
+      ];
+
+      const list = products.length ? products : defaultProducts;
+
+      let activeKategori = 'all';
+
+      function productKategori(p) {
+        // Prioritas: kategori yang disimpan dari seller.
+        if (p.kategori) return p.kategori;
+
+        // Fallback untuk produk lama yang belum punya field kategori.
+        const n = String(p.nama || '').toLowerCase();
+        if (/(keripik|pisang|singkong|makanan)/.test(n)) return 'makanan-minuman';
+        if (/(pakaian|baju|kaos)/.test(n)) return 'pakaian';
+        if (/(tanaman|dekorasi|hias)/.test(n)) return 'tanaman-dekorasi';
+        if (/(tas|dompet|aksesoris|rajut)/.test(n)) return 'aksesoris';
+        return 'kerajinan';
+      }
+
+
+      function renderProducts() {
+        container.innerHTML = '';
+
+        const filtered = !activeKategori || activeKategori === 'all'
+          ? list
+          : list.filter(p => productKategori(p) === activeKategori);
+
+        if (!filtered || filtered.length === 0) {
+          container.innerHTML = `
+            <div class="card" style="grid-column:1/-1; padding:30px;">
+              <p style="color:#666;text-align:center;">Tidak ada produk untuk kategori ini.</p>
+            </div>`;
+          return;
+        }
+
+        filtered.forEach(p => {
+          const imgSrc = p.image || 'Keripik-2.png.jpeg';
+          const sellerNama = p.sellerNama || 'Penjual';
+          const kategori = productKategori(p);
+          const el = document.createElement('div');
+          el.className = 'card';
+          el.innerHTML = `
+            <img src="${imgSrc}" alt="${p.nama}">
+            <div class="card-content">
+              <p style="justify-content:flex-start;">${p.nama}</p>
+              <p class="price">${formatRp(Number(p.harga))}</p>
+              <p style="font-size:0.95rem;color:#666;justify-content:flex-start;min-height:24px;">Dijual oleh: ${sellerNama}</p>
+              <button type="button" onclick="window.__addToCartFromUI('${p.nama}', ${Number(p.harga)}, '${kategori}', '${sellerNama}', '${imgSrc}')">Tambah ke Keranjang</button>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px; margin-top:10px; font-size:0.9rem; color:#666;">
+                <span>Kategori: <b style="color:#8b4513;">${kategori.replace('-', ' ')}</b></span>
+              </div>
+            </div>
+          `;
+          container.appendChild(el);
+        });
+      }
+
+      window.__addToCartFromUI = function(nama, harga, kategori, sellerNama, image) {
+        addToCart(nama, harga, kategori, sellerNama, image);
+      };
+
+      kategoriButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          kategoriButtons.forEach(b => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
+          activeKategori = btn.getAttribute('data-kategori') || 'all';
+          renderProducts();
+        });
+      });
+
+      syncCartUI();
+      renderProducts();
+    })();
+  </script>
+
+</body>
+</html>
+

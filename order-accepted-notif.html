@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifikasi: Pesanan Diterima - BERSENJA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+    <div class="nav-menu">
+      <span onclick="window.location.href='index.html'">Beranda</span>
+      <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+      <span onclick="window.location.href='profile.html'">Profil</span>
+    </div>
+  </div>
+
+  <section style="padding:70px 20px;">
+    <div class="checkout-container" style="max-width:920px;">
+      <div class="checkout-header">
+        <h1>Pesanan Anda Diterima! 🎉</h1>
+        <p>Penjual telah mengonfirmasi pembelian Anda.</p>
+      </div>
+
+      <div class="checkout-grid" style="grid-template-columns: 1fr;">
+        <div class="checkout-card" style="padding:22px;">
+          <h2 style="margin-top:0;">Detail Pesanan</h2>
+
+          <div class="summary" style="margin-top:14px;">
+            <div class="summary-row">
+              <span>Order ID</span>
+              <span id="orderId" class="summary-strong">-</span>
+            </div>
+            <div class="summary-row">
+              <span>Produk</span>
+              <span id="summaryProduk" class="summary-strong">-</span>
+            </div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summarySubtotal" class="summary-strong price-green">-</span>
+            </div>
+            <div class="summary-row">
+              <span>Metode Pembayaran</span>
+              <span id="summaryMetode" class="summary-strong">-</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div style="flex:1; min-width:260px;">
+              <h2 style="margin:0 0 8px;">Apa selanjutnya?</h2>
+              <ul style="margin:0; padding-left:18px; color:#333; line-height:1.8;">
+                <li>Anda bisa melihat status di halaman <b>Menunggu Konfirmasi</b>.</li>
+                <li>Status berubah setelah penjual menekan tombol Terima/Tolak.</li>
+
+              </ul>
+            </div>
+            <div style="flex:1; min-width:260px;">
+              <h2 style="margin:0 0 8px;">Status saat ini</h2>
+              <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                <span id="statusBadge" class="badge" style="background:#e8f5e9; color:#1b5e20; padding:10px 14px; border-radius:12px; font-weight:700;">DITERIMA</span>
+                <small id="statusText" style="color:#1b5e20; font-weight:700;">Penjual telah mengonfirmasi pesanan Anda.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="checkout-actions" style="margin-top:18px; justify-content:flex-start;">
+            <button class="btn-primary" type="button" onclick="window.location.href='order-pending.html'">Lihat Status</button>
+            <button class="btn-secondary" type="button" onclick="window.location.href='marketplace.html'">Kembali Belanja</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:16px;">
+        <b>Catatan:</b> Halaman ini khusus notifikasi untuk pembeli ketika penjual mengonfirmasi pesanan.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Navigasi</h3>
+        <p>Beranda</p>
+        <p>Marketplace</p>
+        <p>Profil</p>
+      </div>
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    function getOrderFromStorage() {
+      const orderRaw = localStorage.getItem('bersenja_order_data');
+      if (!orderRaw) return null;
+      try { return JSON.parse(orderRaw); } catch (e) { return null; }
+    }
+
+    function initNotif() {
+      const orderId = localStorage.getItem('bersenja_order_id') || '-';
+      const status = localStorage.getItem('bersenja_order_status') || 'pending';
+      const order = getOrderFromStorage();
+
+      document.getElementById('orderId').innerText = orderId;
+      document.getElementById('summaryProduk').innerText = order?.produk ?? '-';
+
+      const subtotal = order?.subtotal;
+      if (typeof subtotal === 'number') {
+        document.getElementById('summarySubtotal').innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
+      } else {
+        document.getElementById('summarySubtotal').innerText = '-';
+      }
+
+      const metode = order?.metode || '-';
+      let labelMetode = '-';
+      if (metode === 'transfer') labelMetode = 'Transfer Bank';
+      else if (metode === 'va') labelMetode = 'Virtual Account (VA)';
+      else if (metode === 'ewallet') labelMetode = 'E-Wallet';
+      document.getElementById('summaryMetode').innerText = labelMetode;
+
+      // Safety: jika user buka notifikasi tapi status belum accepted
+      const badge = document.getElementById('statusBadge');
+      const text = document.getElementById('statusText');
+      if (status !== 'accepted') {
+        badge.style.background = '#fff8e1';
+        badge.style.color = '#f57f17';
+        badge.innerText = (status === 'rejected') ? 'DITOLAK' : 'MENUNGGU';
+        text.innerText = 'Status pesanan berubah. Silakan cek halaman status.';
+      }
+    }
+
+    initNotif();
+  </script>
+</body>
+</html>
+

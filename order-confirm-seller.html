@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konfirmasi Pesanan Penjual - BERSENJA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+
+    <div class="nav-menu">
+      <span onclick="window.location.href='index.html'">Beranda</span>
+      <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+      <span onclick="window.location.href='seller.html'">Penjual</span>
+      <span onclick="window.location.href='profile.html'">Profil</span>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-secondary" onclick="logout()">Keluar</button>
+    </div>
+  </nav>
+
+  <section class="seller-wrap" style="padding: 60px 20px;">
+    <div class="seller-container">
+
+      <div class="seller-card">
+        <div class="seller-list-header">
+          <h2 class="seller-section-title" style="margin:0;">Konfirmasi Pesanan</h2>
+          <button class="btn-secondary" type="button" onclick="refreshOrderPanel()">Refresh</button>
+        </div>
+
+        <div class="card" style="margin:12px 0 0; box-shadow:none; border:1px solid rgba(0,0,0,0.06);">
+          <div style="padding:16px;">
+            <p style="margin:0 0 6px; color:#666;">Order ID</p>
+            <h3 id="orderPanelId" style="margin:0 0 12px; color:#2c3e50;">-</h3>
+
+            <p style="margin:0 0 6px; color:#666;">Produk</p>
+            <p id="orderPanelProduk" style="margin:0 0 12px; color:#333;">-</p>
+
+            <p style="margin:0 0 6px; color:#666;">Subtotal</p>
+            <p id="orderPanelSubtotal" style="margin:0 0 12px; color:#333;">-</p>
+
+            <p style="margin:0 0 6px; color:#666;">Status</p>
+            <p id="orderPanelStatus" style="margin:0 0 16px; font-weight:700;">Menunggu...</p>
+
+            <div class="checkout-actions" style="justify-content:flex-start;">
+              <button class="btn-primary" type="button" onclick="terimaOrderPending()">Konfirmasi Terima</button>
+              <button class="btn-secondary" type="button" onclick="tolakOrderPending()">Tolak</button>
+            </div>
+
+            <div class="note" style="margin-top:14px;">
+              Demo tanpa backend: status hanya disimpan di <b>localStorage</b>.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="seller-card" style="margin-top:25px;">
+        <div class="checkout-actions" style="justify-content:flex-start;">
+          <button class="btn-secondary" type="button" onclick="window.location.href='seller.html'">Kembali ke Halaman Penjual</button>
+          <button class="btn-primary" type="button" onclick="window.location.href='order-pending.html'">Lihat Halaman Status Pembeli</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Navigasi</h3>
+        <p>Beranda</p>
+        <p>Marketplace</p>
+        <p>Profil</p>
+      </div>
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    function refreshOrderPanel(){
+      const orderId = localStorage.getItem('bersenja_order_id') || '-';
+      const status = localStorage.getItem('bersenja_order_status') || 'pending';
+      const raw = localStorage.getItem('bersenja_order_data');
+
+      let order = null;
+      try { order = raw ? JSON.parse(raw) : null; } catch(e) {}
+
+      document.getElementById('orderPanelId').innerText = orderId;
+      document.getElementById('orderPanelProduk').innerText = order?.produk ?? '-';
+
+      const subtotal = order?.subtotal;
+      document.getElementById('orderPanelSubtotal').innerText = (typeof subtotal === 'number')
+        ? ('Rp ' + subtotal.toLocaleString('id-ID'))
+        : '-';
+
+      const el = document.getElementById('orderPanelStatus');
+      if (!el) return;
+
+      if (status === 'accepted') {
+        el.innerText = 'Diterima';
+      } else if (status === 'rejected') {
+        el.innerText = 'Ditolak';
+      } else {
+        el.innerText = 'Menunggu...';
+      }
+
+      return { orderId, status };
+    }
+
+    function terimaOrderPending(){
+      const { status } = refreshOrderPanel();
+      if (status !== 'pending') {
+        alert('Status pesanan sudah tidak pending.');
+        return;
+      }
+      localStorage.setItem('bersenja_order_status', 'accepted');
+      refreshOrderPanel();
+      alert('Order diterima.');
+    }
+
+    function tolakOrderPending(){
+      const { status } = refreshOrderPanel();
+      if (status !== 'pending') {
+        alert('Status pesanan sudah tidak pending.');
+        return;
+      }
+      localStorage.setItem('bersenja_order_status', 'rejected');
+      refreshOrderPanel();
+      alert('Order ditolak.');
+    }
+
+    window.refreshOrderPanel = refreshOrderPanel;
+    window.terimaOrderPending = terimaOrderPending;
+    window.tolakOrderPending = tolakOrderPending;
+
+    // bootstrap
+    refreshOrderPanel();
+  </script>
+
+</body>
+</html>
+

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beli Produk - BERSENJA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+    <div class="nav-menu">
+      <span onclick="window.location.href='Index.html'">Beranda</span>
+      <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+      <span onclick="window.location.href='profile.html'">Profil</span>
+    </div>
+  </div>
+
+  <section class="buy-wrap">
+    <div class="buy-container">
+      <div class="buy-card">
+        <h1>Siap Belanja?</h1>
+        <p class="muted">Review ringkasan produk sebelum checkout.</p>
+
+        <div class="buy-summary">
+          <div class="summary-row">
+            <span>Produk</span>
+            <span id="buyProduk" class="summary-strong">-</span>
+          </div>
+          <div class="summary-row">
+            <span>Harga</span>
+            <span id="buyHarga" class="summary-strong price-green">-</span>
+          </div>
+        </div>
+
+        <div class="buy-actions">
+          <button class="btn-secondary" type="button" onclick="window.location.href='marketplace.html'">Pilih Produk Lain</button>
+          <button class="btn-primary" type="button" onclick="window.location.href='checkout-form.html'">Lanjut ke Checkout</button>
+        </div>
+
+        <div class="note">
+          Jika tombol “Beli” dari marketplace langsung mengarah ke checkout-form, halaman ini bisa diabaikan.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function initBuy() {
+      const data = localStorage.getItem('checkoutProdukData');
+      let produk = '-';
+      let harga = null;
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          produk = parsed.nama || '-';
+          harga = parsed.harga ?? null;
+        } catch (e) {}
+      }
+      document.getElementById('buyProduk').innerText = produk;
+      if (typeof harga === 'number') {
+        document.getElementById('buyHarga').innerText = 'Rp ' + harga.toLocaleString('id-ID');
+      }
+    })();
+  </script>
+</body>
+</html>
+

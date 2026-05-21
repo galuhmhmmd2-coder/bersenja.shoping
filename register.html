@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar - BERSENJA</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#ff9100;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .container{
+      background:white;
+      padding:30px;
+      width:350px;
+      border-radius:15px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2{
+      text-align:center;
+      margin-bottom:20px;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin:10px 0;
+      border:1px solid #ccc;
+      border-radius:8px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:8px;
+      background:#2e7d32;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      opacity:0.9;
+    }
+
+    p{
+      text-align:center;
+      margin-top:15px;
+    }
+
+    a{
+      color:#2e7d32;
+      text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Daftar</h2>
+
+    <input type="text" placeholder="Nama Lengkap">
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+
+    <button class="btn-primary" type="button" onclick="register()">Daftar</button>
+
+    <p>Sudah punya akun?
+      <a href="login.html">Masuk</a>
+    </p>
+  </div>
+
+  <script>
+    function getUsers(){
+      const raw = localStorage.getItem('bersenja_users');
+      if(!raw) return [];
+      try { return JSON.parse(raw) || []; } catch(e){ return []; }
+    }
+    function setUsers(list){
+      localStorage.setItem('bersenja_users', JSON.stringify(list));
+    }
+
+    function normalizeEmail(e){
+      return String(e || '').trim().toLowerCase();
+    }
+
+    function register(){
+      const inputs = document.querySelectorAll('input');
+      const nama = (inputs[0]?.value || '').trim();
+      const email = normalizeEmail(inputs[1]?.value);
+      const password = (inputs[2]?.value || '').trim();
+
+      if(!nama){ alert('Nama lengkap wajib diisi.'); return; }
+      if(!email || !email.includes('@')){ alert('Email tidak valid.'); return; }
+      if(!password){ alert('Password wajib diisi.'); return; }
+
+      const users = getUsers();
+      const exists = users.some(u => normalizeEmail(u.email) === email);
+      if(exists){
+        alert('Email sudah terdaftar. Silakan login.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // default role pembeli agar tidak sembarangan masuk jadi penjual
+      // (role penjual akan dipilih saat login seperti existing UI)
+      users.push({
+        email,
+        password,
+        nama,
+        role: 'pembeli'
+      });
+      setUsers(users);
+
+      alert('Pendaftaran berhasil!');
+      window.location.href = 'login.html';
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Beranda - BERSENJA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+
+    <div class="nav-menu">
+      <span onclick="beranda()">Beranda</span>
+      <span onclick="marketplace()">Marketplace</span>
+      <span onclick="edukasi()">Edukasi</span>
+      <span onclick="profil()">Profil Pengguna</span>
+      <span onclick="aboutUs()">About Us</span>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-secondary" onclick="masuk()">Masuk</button>
+      <button class="btn-primary" onclick="daftar()">Daftar</button>
+    </div>
+  </nav>
+
+  <!-- ROLE INFO -->
+  <div class="role-info">
+    <div class="role-card">
+      <p>
+        Akses sebagai <b>Pembeli</b> untuk belanja, atau <b>Penjual</b> untuk menambah produk & harga.
+        Pilih role setelah klik <b>Masuk</b>.
+      </p>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Berdaya di Usia Senja, Mandiri dan Bermakna</h1>
+      <p>Platform untuk membantu lansia tetap aktif, produktif, dan mandiri melalui komunitas, edukasi, dan marketplace.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="marketplace()">Jelajahi Marketplace</button>
+        <button class="btn-secondary" onclick="edukasi()">Lihat Edukasi</button>
+      </div>
+
+      <div class="hero-badges" aria-hidden="true">
+        <div class="badge">🤍 Ramah Lansia</div>
+        <div class="badge">✨ Premium & Clean</div>
+        <div class="badge">🌿 Hangat & Mandiri</div>
+      </div>
+    </div>
+
+    <div class="hero-img">
+      <img src="Beranda.png.jpeg" alt="Lansia beraktivitas produktif">
+    </div>
+  </section>
+
+  <!-- FITUR SECTION -->
+  <section class="fitur" id="fitur">
+    <div class="section-head">
+      <h2>Fitur Unggulan</h2>
+      <p>Platform untuk membantu lansia tetap produktif, mandiri, dan berkarya.</p>
+    </div>
+
+    <div class="fitur-grid">
+      <div class="fitur-item">
+        <div class="fitur-icon" aria-hidden="true">🛍️</div>
+        <h3>Marketplace Lansia</h3>
+        <p>Tempat jual beli produk kreatif buatan lansia.</p>
+      </div>
+
+      <div class="fitur-item">
+        <div class="fitur-icon" aria-hidden="true">📚</div>
+        <h3>Edukasi Digital</h3>
+        <p>Materi yang mudah diikuti untuk meningkatkan keterampilan.</p>
+      </div>
+
+      <div class="fitur-item">
+        <div class="fitur-icon" aria-hidden="true">🤝</div>
+        <h3>Komunitas</h3>
+        <p>Ruang bertemu, berbagi, dan saling mendukung.</p>
+      </div>
+
+    </div>
+  </section>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>
+          Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Navigasi</h3>
+        <p onclick="beranda()" style="cursor:pointer;">Beranda</p>
+        <p onclick="window.location.href='marketplace.html'" style="cursor:pointer;">Marketplace</p>
+        <p onclick="window.location.href='edukasi.html'" style="cursor:pointer;">Edukasi</p>
+        <p onclick="window.location.href='profile.html'" style="cursor:pointer;">Profil Pengguna</p>
+        <p onclick="aboutUs()" style="cursor:pointer;">About Us</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

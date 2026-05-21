@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - BERSENJA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+
+    <div class="nav-menu">
+      <span onclick="window.location.href='index.html'">Beranda</span>
+      <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+      <span onclick="window.location.href='profile.html'">Profil</span>
+    </div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <section class="checkout-wrap">
+    <div class="checkout-container">
+      <div class="checkout-header">
+        <h1>Checkout</h1>
+        <p>Isi alamat dan metode pembayaran untuk menyelesaikan pesanan.</p>
+      </div>
+
+      <div class="checkout-grid">
+        <!-- Ringkasan -->
+        <div class="checkout-card">
+          <h2>Ringkasan Pesanan</h2>
+          <div class="summary">
+            <div class="summary-row">
+              <span>Produk</span>
+              <span id="summaryProduk" class="summary-strong">-</span>
+            </div>
+            <div class="summary-row">
+              <span>Harga</span>
+              <span id="summaryHarga" class="summary-strong">-</span>
+            </div>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summarySubtotal" class="summary-strong price-green">-</span>
+            </div>
+          </div>
+
+          <div class="note">
+            <b>Catatan:</b> Pembayaran dilakukan sesuai instruksi pada metode yang dipilih.
+
+          </div>
+        </div>
+
+        <!-- Form -->
+        <div class="checkout-card">
+          <h2>Data Pengiriman</h2>
+          <form id="formCheckout" class="checkout-form" onsubmit="return false;">
+            <div class="field-row">
+              <div class="field">
+                <label>Nama Penerima</label>
+                <input id="nama" type="text" placeholder="Contoh: Siti" required />
+              </div>
+              <div class="field">
+                <label>No. HP</label>
+                <input id="hp" type="tel" placeholder="Contoh: 08xxxx" required />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>Provinsi</label>
+                <input id="provinsi" type="text" placeholder="Contoh: Jawa Tengah" required />
+              </div>
+              <div class="field">
+                <label>Kota/Kabupaten</label>
+                <input id="kota" type="text" placeholder="Contoh: Semarang" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Alamat Lengkap</label>
+              <textarea id="alamat" rows="4" placeholder="Alamat detail (jalan, nomor rumah, RT/RW)" required></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>Kode Pos</label>
+                <input id="kodepos" type="text" placeholder="Contoh: 502xx" required />
+              </div>
+              <div class="field">
+                <label>Catatan (opsional)</label>
+                <input id="catatan" type="text" placeholder="Contoh: titip satpam" />
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2>Metode Pembayaran</h2>
+            <div class="payment-options" role="radiogroup" aria-label="Metode Pembayaran">
+              <label class="payment-option">
+                <input type="radio" name="metode" value="transfer" checked />
+                <span>Transfer Bank</span>
+                <small>Transfer ke rekening BERSENJA</small>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="metode" value="va" />
+                <span>Virtual Account (VA)</span>
+                <small>Bayar menggunakan kode VA</small>
+              </label>
+
+              <label class="payment-option">
+                <input type="radio" name="metode" value="ewallet" />
+                <span>E-Wallet</span>
+                <small>QRIS / saldo e-wallet</small>
+              </label>
+            </div>
+
+            <div class="bank-demo" id="bankDemo">
+              <p><b>Informasi Pembayaran:</b></p>
+              <div id="paymentInfoText">Silakan pilih metode pembayaran untuk melihat detail.</div>
+            </div>
+
+
+
+            <div class="checkout-actions">
+              <button class="btn-secondary" type="button" onclick="window.location.href='marketplace.html'">Kembali</button>
+              <button class="btn-primary" type="button" onclick="konfirmasiCheckout()">Konfirmasi Pembayaran</button>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Navigasi</h3>
+        <p>Beranda</p>
+        <p>Marketplace</p>
+        <p>Profil</p>
+      </div>
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // ambil ringkasan dari localStorage
+    (function initCheckout() {
+      const cartRaw = localStorage.getItem('checkoutCartData');
+      const data = localStorage.getItem('checkoutProdukData');
+
+      let produk = '-';
+      let subtotal = null;
+
+      // Prioritas: multi item dari cart
+      if (cartRaw) {
+        try {
+          const parsed = JSON.parse(cartRaw);
+          const items = Array.isArray(parsed.items) ? parsed.items : [];
+          produk = items.length ? items.map(i => `${i.nama} x${i.qty}`).join(', ') : '-';
+          subtotal = typeof parsed.total === 'number' ? parsed.total : null;
+        } catch (e) {}
+      }
+
+      // Fallback: 1 item lama
+      if (subtotal === null) {
+        let harga = null;
+        if (data) {
+          try {
+            const parsed = JSON.parse(data);
+            produk = parsed.nama || '-';
+            harga = parsed.harga ?? null;
+          } catch (e) {}
+        } else {
+          const p = localStorage.getItem('checkout');
+          if (p) produk = p;
+        }
+        if (typeof harga === 'number') subtotal = harga;
+      }
+
+      document.getElementById('summaryProduk').innerText = produk;
+
+      if (typeof subtotal === 'number') {
+        const formatted = subtotal.toLocaleString('id-ID');
+        document.getElementById('summaryHarga').innerText = 'Rp ' + formatted;
+        document.getElementById('summarySubtotal').innerText = 'Rp ' + formatted;
+      } else {
+        document.getElementById('summaryHarga').innerText = '-';
+        document.getElementById('summarySubtotal').innerText = '-';
+      }
+
+      // update info demo saat metode diubah
+      const paymentInfoText = document.getElementById('paymentInfoText');
+      const radios = document.querySelectorAll('input[name="metode"]');
+
+
+      function updateInfo() {
+        const selected = document.querySelector('input[name="metode"]:checked')?.value;
+        if (!selected) return;
+
+        if (selected === 'transfer') {
+          paymentInfoText.innerHTML = `
+            <div class="payment-detail">
+              <img class="payment-logo" src="logo-seabank.png.jpeg" alt="Logo Seabank" />
+              <div class="payment-detail-text">
+                <div class="payment-bank">Bank Seabank</div>
+                <div class="payment-rek">Rekening: 901806924830</div>
+              </div>
+            </div>
+            <small class="payment-hint">Nominal mengikuti subtotal.</small>
+          `;
+        } else if (selected === 'va') {
+          paymentInfoText.innerHTML = `
+            <div class="payment-detail">
+              <img class="payment-logo" src="logo-bri.png.jpeg" alt="Logo Bri" />
+              <div class="payment-detail-text">
+                <div class="payment-bank">Bank Bri</div>
+                <div class="payment-rek">Rekening: 040501009357533</div>
+              </div>
+            </div>
+            <small class="payment-hint">Nominal mengikuti subtotal.</small>
+          `;
+        } else {
+          paymentInfoText.innerHTML = `
+            <div class="payment-detail">
+              <img class="payment-logo" src="logo-dana.png.jpeg" alt="Logo Dana" />
+              <div class="payment-detail-text">
+                <div class="payment-bank">Dana</div>
+                <div class="payment-rek">No: 081376502131</div>
+              </div>
+            </div>
+            <small class="payment-hint">Nominal mengikuti subtotal.</small>
+          `;
+        }
+      }
+
+
+      radios.forEach(r => r.addEventListener('change', updateInfo));
+      updateInfo();
+    })();
+  </script>
+</body>
+</html>
+
