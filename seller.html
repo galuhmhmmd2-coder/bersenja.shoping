@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Penjual - BERSENJA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <img src="logo2.png.jpeg" alt="Logo Bersenja" class="logo">
+      <span>BERSENJA</span>
+    </div>
+
+    <div class="nav-menu">
+      <span onclick="window.location.href='index.html'">Beranda</span>
+      <span onclick="window.location.href='marketplace.html'">Marketplace</span>
+      <span onclick="window.location.href='seller.html'">Penjual</span>
+      <span onclick="window.location.href='profile.html'">Profil</span>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-secondary" onclick="logout()">Keluar</button>
+    </div>
+  </nav>
+
+  <!-- SELLER HEADER -->
+<section class="seller-wrap" style="padding: 60px 20px;">
+
+  <!-- NOTE: Halaman ini dipisah (Pisahkan HTML) - konfirmasi pesanan ada di order-confirm-seller.html -->
+    <div class="seller-container">
+        <div class="seller-grid">
+        <div class="seller-card">
+          <h1 class="seller-title">Profil Penjual</h1>
+          <p class="seller-subtitle">Perkenalkan diri dan produk lansia Anda.</p>
+
+          <div class="card" style="box-shadow:none;border:1px solid rgba(0,0,0,0.06);">
+            <div style="padding:20px;">
+          <h3 id="sellerNama" style="color:#2c3e50;margin-bottom:8px;">-</h3>
+              <p id="sellerEmail" style="color:#666;margin-bottom:6px;">-</p>
+              <p id="sellerBio" style="color:#555;line-height:1.8;">Saya siap membantu lansia berkarya melalui produk buatan tangan yang berkualitas.</p>
+            
+            <div class="divider" style="margin:18px 0;"></div>
+
+            <div class="field" style="gap:8px;">
+              <label style="font-weight:700;">Perkenalan Penjual</label>
+              <textarea id="sellerBioInput" rows="3" placeholder="Contoh: Halo, saya Rina. Saya membuat kerajinan rajut untuk membantu ekonomi keluarga."
+                style="border:1px solid rgba(0,0,0,0.12); border-radius:14px; padding:12px 14px; font-size:1rem; outline:none; width:100%;"></textarea>
+              <div class="checkout-actions" style="margin-top:10px;justify-content:flex-start;">
+                <button class="btn-primary" type="button" onclick="simpanBioSeller()">Simpan Profil</button>
+              </div>
+            </div>
+
+            </div>
+          </div>
+
+          <div class="seller-hint">
+            Tips: produk yang Anda tambahkan akan otomatis tampil di halaman <b>Marketplace</b>.
+          </div>
+        </div>
+
+        <div class="seller-card">
+          <h2 class="seller-section-title">Tambah Produk</h2>
+
+          <form id="formSeller" onsubmit="return false;" class="seller-form">
+            <div class="field-row">
+              <div class="field">
+                <label>Nama Produk</label>
+                <input id="prodNama" type="text" placeholder="Contoh: Keripik Pisang" required />
+              </div>
+              <div class="field">
+                <label>Kategori</label>
+                <select id="prodKategori" required>
+                  <option value="">-- Pilih Kategori --</option>
+                  <option value="makanan-minuman">Makanan & Minuman</option>
+                  <option value="kerajinan">Kerajinan Tangan</option>
+                  <option value="pakaian">Pakaian</option>
+                  <option value="aksesoris">Aksesoris</option>
+                  <option value="tanaman-dekorasi">Tanaman Hias / Dekorasi Rumah</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>Harga (Rp)</label>
+                <input id="prodHarga" type="number" placeholder="Contoh: 20000" min="1" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Deskripsi Singkat</label>
+              <input id="prodDeskripsi" type="text" placeholder="Contoh: Renyah, buatan lansia" />
+            </div>
+
+
+            <div class="field">
+              <label>Foto Produk (opsional)</label>
+              <input id="prodGambarFile" type="file" accept="image/*" />
+              <div class="note" style="margin-top:8px;">
+                Foto akan disimpan di browser untuk ditampilkan di marketplace.
+              </div>
+              <img id="prodGambarPreview" alt="Preview Produk" style="display:none;width:100%;max-width:220px;margin-top:10px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.1);" />
+            </div>
+
+            <div class="checkout-actions">
+              <input type="hidden" id="editingProductId" value="" />
+              <button id="btnSimpanProduk" class="btn-primary" type="button" onclick="tambahProdukSeller()">Simpan Produk</button>
+              <button id="btnSimpanEditProduk" class="btn-primary" type="button" style="display:none;" onclick="simpanEditProduk()">Simpan Perubahan</button>
+              <button id="btnBatalEdit" class="btn-secondary" type="button" style="display:none;" onclick="batalEditProduk()">Batal Edit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="seller-card" style="margin-top:25px;">
+        <div class="seller-list-header">
+          <h2 class="seller-section-title" style="margin:0;">Pesanan Menunggu Konfirmasi</h2>
+          <button class="btn-primary" type="button" onclick="window.location.href='order-confirm-seller.html'">Konfirmasi Pesanan</button>
+        </div>
+
+        <div class="card" style="margin:12px 0 0; box-shadow:none; border:1px solid rgba(0,0,0,0.06);">
+          <div style="padding:16px;">
+            <p style="margin:0; color:#666;">Klik tombol <b>Konfirmasi Pesanan</b> untuk menerima/menolak pesanan.</p>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="seller-card" style="margin-top:25px;">
+        <div class="seller-list-header">
+          <h2 class="seller-section-title" style="margin:0;">Produk Saya</h2>
+          <button class="btn-secondary" type="button" onclick="resetProdukSaya()">Reset Produk</button>
+        </div>
+
+        <div id="listProdukSaya" class="produk-grid seller-products-grid">
+          <!-- diisi JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BERSENJA</h3>
+        <p>Marketplace pemberdayaan lansia untuk mendukung produk kreatif dan usaha mandiri.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Navigasi</h3>
+        <p>Beranda</p>
+        <p>Marketplace</p>
+        <p>Profil</p>
+      </div>
+      <div class="footer-section">
+        <h3>Kontak</h3>
+        <p>Email: bersenja@gmail.com</p>
+        <p>Instagram: @bersenja.id</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BERSENJA. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // mode edit produk
+    function syncModeEditUI() {
+      const editingId = (document.getElementById('editingProductId')?.value || '').trim();
+      const isEditing = !!editingId;
+      const btnSimpanProduk = document.getElementById('btnSimpanProduk');
+      const btnSimpanEditProduk = document.getElementById('btnSimpanEditProduk');
+      const btnBatalEdit = document.getElementById('btnBatalEdit');
+      if (btnSimpanProduk) btnSimpanProduk.style.display = isEditing ? 'none' : 'inline-block';
+      if (btnSimpanEditProduk) btnSimpanEditProduk.style.display = isEditing ? 'inline-block' : 'none';
+      if (btnBatalEdit) btnBatalEdit.style.display = isEditing ? 'inline-block' : 'none';
+    }
+
+    function loadSellerProfile() {
+      const nama = localStorage.getItem('bersenja_nama') || '-';
+      const email = localStorage.getItem('bersenja_email') || '-';
+
+      const emailKey = String(email || '');
+      const keyBioByEmail = 'bersenja_seller_bio_' + emailKey;
+
+      const bio = localStorage.getItem(keyBioByEmail)
+        || localStorage.getItem('bersenja_seller_bio')
+        || 'Saya siap membantu lansia berkarya melalui produk buatan tangan yang berkualitas.';
+
+      document.getElementById('sellerNama').innerText = nama;
+      document.getElementById('sellerEmail').innerText = 'Email: ' + email;
+      document.getElementById('sellerBio').innerText = bio;
+      const bioInput = document.getElementById('sellerBioInput');
+      if (bioInput) bioInput.value = bio;
+    }
+
+    function simpanBioSeller() {
+      const input = document.getElementById('sellerBioInput');
+      const bio = (input?.value || '').trim();
+      if (!bio) {
+        alert('Perkenalan tidak boleh kosong.');
+        return;
+      }
+      localStorage.setItem('bersenja_seller_bio', bio);
+
+      // simpan juga per akun (berdasarkan email) supaya seller berbeda tidak ikut tertimpa
+      const email = localStorage.getItem('bersenja_email') || '';
+      if (email){
+        localStorage.setItem('bersenja_seller_bio_' + email, bio);
+      }
+
+      document.getElementById('sellerBio').innerText = bio;
+
+      alert('Profil penjual tersimpan.');
+    }
+
+
+    function getProducts() {
+      const raw = localStorage.getItem('bersenja_products');
+      if (!raw) return [];
+      try { return JSON.parse(raw); } catch (e) { return []; }
+    }
+
+    function setProducts(list) {
+      localStorage.setItem('bersenja_products', JSON.stringify(list));
+    }
+
+    async function tambahProdukSeller() {
+      const namaInput = document.getElementById('prodNama');
+      const hargaInput = document.getElementById('prodHarga');
+      const deskripsi = (document.getElementById('prodDeskripsi').value || '').trim();
+      const gambarFile = document.getElementById('prodGambarFile').files && document.getElementById('prodGambarFile').files[0];
+
+      const namaProduk = (namaInput?.value || '').trim();
+      const harga = Number((hargaInput?.value || '').toString().trim());
+      const kategori = (document.getElementById('prodKategori')?.value || '').trim();
+
+      const sellerNama = localStorage.getItem('bersenja_nama') || 'Penjual';
+      const sellerEmail = localStorage.getItem('bersenja_email') || 'seller@email.com';
+
+      if (!namaProduk) {
+        alert('Nama produk wajib diisi.');
+        namaInput?.focus();
+        return;
+      }
+      if (!Number.isFinite(harga) || harga <= 0) {
+        alert('Harga wajib diisi dengan angka yang valid.');
+        hargaInput?.focus();
+        return;
+      }
+
+
+      
+
+      let imageDataUrl = '';
+      if (gambarFile) {
+        imageDataUrl = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(gambarFile);
+        });
+      }
+
+
+      const products = getProducts();
+      if (!kategori) {
+        alert('Kategori wajib diisi.');
+        document.getElementById('prodKategori')?.focus();
+        return;
+      }
+
+      const newItem = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+        sellerNama,
+        sellerEmail,
+        nama: namaProduk,
+        harga,
+        kategori,
+        deskripsi,
+        image: imageDataUrl // data URL dari file
+      };
+
+      products.push(newItem);
+      setProducts(products);
+
+      document.getElementById('formSeller').reset();
+      const kategoriSelect = document.getElementById('prodKategori');
+      if (kategoriSelect) kategoriSelect.value = '';
+      document.getElementById('prodGambarPreview').style.display = 'none';
+      document.getElementById('prodGambarPreview').src = '';
+
+      renderProdukSaya();
+
+      // supaya penjual bisa tambah produk lagi tanpa klik ulang input
+      document.getElementById('prodNama')?.focus();
+
+      alert('Produk berhasil disimpan. Anda bisa menambah produk lagi!');
+    }
+
+
+    function resetProdukSaya() {
+      const confirmReset = confirm('Reset semua produk seller di perangkat ini?');
+      if (!confirmReset) return;
+      const products = getProducts();
+      const sellerEmail = localStorage.getItem('bersenja_email');
+      const remaining = products.filter(p => p.sellerEmail !== sellerEmail);
+      setProducts(remaining);
+      renderProdukSaya();
+    }
+
+    function tampilkanEditProduk(id) {
+      const editingIdInput = document.getElementById('editingProductId');
+      const products = getProducts();
+      const product = products.find(p => p.id === id);
+      if (!product) {
+        alert('Produk tidak ditemukan.');
+        return;
+      }
+
+      editingIdInput.value = id;
+
+      const namaInput = document.getElementById('prodNama');
+      const hargaInput = document.getElementById('prodHarga');
+      const deskripsiInput = document.getElementById('prodDeskripsi');
+
+      if (namaInput) namaInput.value = product.nama || '';
+      if (hargaInput) hargaInput.value = product.harga ?? '';
+      if (deskripsiInput) deskripsiInput.value = product.deskripsi || '';
+
+      const kategoriSelect = document.getElementById('prodKategori');
+      if (kategoriSelect) kategoriSelect.value = product.kategori || '';
+
+      // show preview existing image
+
+      const preview = document.getElementById('prodGambarPreview');
+      if (preview) {
+        preview.src = product.image || '';
+        preview.style.display = product.image ? 'block' : 'none';
+      }
+
+      // toggle buttons
+      document.getElementById('btnSimpanProduk').style.display = 'none';
+      document.getElementById('btnSimpanEditProduk').style.display = 'inline-block';
+      document.getElementById('btnBatalEdit').style.display = 'inline-block';
+
+      // UX: reset file input so user can optionally upload a new one
+      const fileInput = document.getElementById('prodGambarFile');
+      if (fileInput) fileInput.value = '';
+
+      document.getElementById('prodNama')?.focus();
+    }
+
+    function batalEditProduk() {
+      const editingIdInput = document.getElementById('editingProductId');
+      editingIdInput.value = '';
+
+      // clear form
+      document.getElementById('formSeller').reset();
+
+      // hide preview
+      const preview = document.getElementById('prodGambarPreview');
+      if (preview) {
+        preview.src = '';
+        preview.style.display = 'none';
+      }
+
+      document.getElementById('btnSimpanProduk').style.display = 'inline-block';
+      document.getElementById('btnSimpanEditProduk').style.display = 'none';
+      document.getElementById('btnBatalEdit').style.display = 'none';
+
+      document.getElementById('prodNama')?.focus();
+    }
+
+    async function simpanEditProduk() {
+      const editingIdInput = document.getElementById('editingProductId');
+      const editingId = (editingIdInput?.value || '').trim();
+      if (!editingId) {
+        alert('Tidak ada produk yang sedang diedit.');
+        return;
+      }
+
+      const namaInput = document.getElementById('prodNama');
+      const hargaInput = document.getElementById('prodHarga');
+      const deskripsiInput = document.getElementById('prodDeskripsi');
+      const gambarFile = document.getElementById('prodGambarFile').files && document.getElementById('prodGambarFile').files[0];
+
+      const namaProduk = (namaInput?.value || '').trim();
+      const harga = Number((hargaInput?.value || '').toString().trim());
+      const deskripsi = (deskripsiInput?.value || '').trim();
+      const kategori = (document.getElementById('prodKategori')?.value || '').trim();
+
+      if (!kategori) {
+        alert('Kategori wajib diisi.');
+        document.getElementById('prodKategori')?.focus();
+        return;
+      }
+
+      if (!namaProduk) {
+
+        alert('Nama produk wajib diisi.');
+        namaInput?.focus();
+        return;
+      }
+      if (!Number.isFinite(harga) || harga <= 0) {
+        alert('Harga wajib diisi dengan angka yang valid.');
+        hargaInput?.focus();
+        return;
+      }
+
+      const products = getProducts();
+      const idx = products.findIndex(p => p.id === editingId);
+
+      if (idx === -1) {
+        alert('Produk tidak ditemukan.');
+        return;
+      }
+
+      let imageDataUrl = products[idx].image || '';
+      if (gambarFile) {
+        imageDataUrl = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(gambarFile);
+        });
+      }
+
+      const next = { ...products[idx], nama: namaProduk, harga, kategori, deskripsi, image: imageDataUrl };
+
+      products[idx] = next;
+      setProducts(products);
+
+      batalEditProduk();
+      renderProdukSaya();
+      alert('Produk berhasil diperbarui.');
+    }
+
+    function renderProdukSaya() {
+      const container = document.getElementById('listProdukSaya');
+      container.innerHTML = '';
+
+      const sellerEmail = localStorage.getItem('bersenja_email');
+      const products = getProducts().filter(p => p.sellerEmail === sellerEmail);
+
+      if (products.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="grid-column:1/-1; padding:30px;">
+            <p style="color:#666;text-align:center;">Belum ada produk. Tambahkan produk di form sebelah.</p>
+          </div>`;
+        return;
+      }
+
+      products.forEach(p => {
+        const imgSrc = p.image ? p.image : 'Keripik-2.png.jpeg';
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <img src="${imgSrc}" alt="${p.nama}">
+          <div class="card-content">
+            <p style="justify-content:flex-start;">${p.nama}</p>
+            <p class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+            <p style="font-size:0.95rem;color:#666;justify-content:flex-start;min-height:24px;">${p.deskripsi || ''}</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+              <button class="btn-secondary" type="button" onclick="tampilkanEditProduk('${p.id}')">Edit</button>
+              <button class="btn-primary" type="button" onclick="hapusProdukSeller('${p.id}')">Hapus</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function hapusProdukSeller(id) {
+      const products = getProducts();
+      const next = products.filter(p => p.id !== id);
+      setProducts(next);
+      renderProdukSaya();
+      alert('Produk dihapus.');
+    }
+
+    // bootstrap
+    // Sync: refresh seller view so marketplace reflects latest localStorage
+    loadSellerProfile();
+    renderProdukSaya();
+    syncModeEditUI();
+
+    // NOTE: refreshOrderPanel/terimaOrderPending/tolakOrderPending dipindahkan ke order-confirm-seller.html
+    function refreshOrderPanel_UNUSED(){
+    return; 
+    }
+
+    function terimaOrderPending_UNUSED(){
+    return; 
+    }
+
+    function tolakOrderPending_UNUSED(){
+    return; 
+    }
+
+
+
+    function terimaOrderPending(){
+      const { status } = refreshOrderPanel();
+      if (status !== 'pending') {
+        alert('Status pesanan sudah tidak pending.');
+        return;
+      }
+      localStorage.setItem('bersenja_order_status', 'accepted');
+      refreshOrderPanel();
+      alert('Order diterima.');
+    }
+
+    function tolakOrderPending(){
+      const { status } = refreshOrderPanel();
+      if (status !== 'pending') {
+        alert('Status pesanan sudah tidak pending.');
+        return;
+      }
+      localStorage.setItem('bersenja_order_status', 'rejected');
+      refreshOrderPanel();
+      alert('Order ditolak.');
+    }
+
+    // expose untuk script.js style inline onclick
+    window.tambahProdukSeller = tambahProdukSeller;
+    window.resetProdukSaya = resetProdukSaya;
+    window.hapusProdukSeller = hapusProdukSeller;
+    window.tampilkanEditProduk = tampilkanEditProduk;
+    window.batalEditProduk = batalEditProduk;
+    window.simpanEditProduk = simpanEditProduk;
+    window.refreshOrderPanel = refreshOrderPanel;
+    window.terimaOrderPending = terimaOrderPending;
+    window.tolakOrderPending = tolakOrderPending;
+  </script>
+</body>
+</html>
+
